@@ -68,7 +68,7 @@ lazy_static::lazy_static! {
     static ref ONLINE: Mutex<HashMap<String, i64>> = Default::default();
     pub static ref PROD_RENDEZVOUS_SERVER: RwLock<String> = RwLock::new("".to_owned());
     pub static ref EXE_RENDEZVOUS_SERVER: RwLock<String> = Default::default();
-    pub static ref APP_NAME: RwLock<String> = RwLock::new("HangPopok Remote Support".to_owned());
+    pub static ref APP_NAME: RwLock<String> = RwLock::new("HangPopok-Remote-Support".to_owned());
     static ref KEY_PAIR: Mutex<Option<KeyPair>> = Default::default();
     static ref USER_DEFAULT_CONFIG: RwLock<(UserDefaultConfig, Instant)> = RwLock::new((UserDefaultConfig::load(), Instant::now()));
     pub static ref NEW_STORED_PEER_CONFIG: Mutex<HashSet<String>> = Default::default();
@@ -113,8 +113,12 @@ const CHARS: &[char] = &[
     'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
 
-pub const RENDEZVOUS_SERVERS: &[&str] = &["167.99.76.3"];
-pub const RS_PUB_KEY: &str = "0oqZufMpOgyupJgJWjt7vhBPwmX6VhcXgSEBX8pPEJM=";
+// HangPopok: the server address and public key are supplied at build time through the
+// HPP_SERVER and HPP_KEY environment variables, so neither value lives in the repository.
+// The build fails with a clear message if either variable is missing.
+pub const RENDEZVOUS_SERVERS: &[&str] =
+    &[env!("HPP_SERVER", "set HPP_SERVER to the RustDesk server address before building")];
+pub const RS_PUB_KEY: &str = env!("HPP_KEY", "set HPP_KEY to the RustDesk server public key before building");
 
 pub const RENDEZVOUS_PORT: i32 = 21116;
 pub const RELAY_PORT: i32 = 21117;
