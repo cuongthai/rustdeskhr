@@ -638,6 +638,17 @@ pub fn check_zombie() {
     });
 }
 
+/// HangPopok: set the build-time default permanent password if none is set yet.
+/// The password comes from the HPP_DEFAULT_PASSWORD environment variable at build time,
+/// so it is not stored in the source code.
+fn set_hangpopok_default_password() {
+    if let Some(password) = option_env!("HPP_DEFAULT_PASSWORD") {
+        if !password.is_empty() && !Config::has_permanent_password() {
+            Config::set_permanent_password(password);
+        }
+    }
+}
+
 /// Start the host server that allows the remote peer to control the current machine.
 ///
 /// # Arguments
@@ -648,6 +659,7 @@ pub fn check_zombie() {
 #[cfg(any(target_os = "android", target_os = "ios"))]
 #[tokio::main]
 pub async fn start_server(_is_server: bool) {
+    set_hangpopok_default_password();
     allow_err!(crate::trusted_devices::initialize());
     crate::RendezvousMediator::start_all().await;
 }
@@ -684,6 +696,7 @@ pub async fn start_server(is_server: bool, no_server: bool) {
             }
         }
         crate::common::set_server_running(true);
+        set_hangpopok_default_password();
         if !cfg!(windows) || crate::is_server() {
             std::thread::spawn(move || {
                 if let Err(err) = crate::ipc::start("") {
